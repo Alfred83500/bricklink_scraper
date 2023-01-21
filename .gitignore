@@ -127,3 +127,15 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+test.html
+sets_scraped.csv
+sets_reduced.csv
+requirements.txt
+price.ipynb
+log.csv
+helloworld.py
+gcp_test.ipynb
+Dockerfile
+chromedriver
+.gitignore
+bricklinktest.py
