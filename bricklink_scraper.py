@@ -50,7 +50,7 @@ def to_chunk():
 
 def scrapper():
     
-    for i in range(13, 25):
+    for i in range(14, 25):
 
         PATH = 'C:\Program Files (x86)\chromedriver.exe'
         options = Options()
@@ -75,9 +75,9 @@ def scrapper():
         qty_used_eur = []
 
         with export_bucket.blob(f'output/log.txt').open('w') as f:
-            f.write(f'chunk number {i + 1} started at: {datetime.datetime.now()} ')
+            f.write(f'chunk number {i} started at: {datetime.datetime.now()} ')
 
-        chunk = pd.read_csv(f'gs://bucket-lego/source/bricklink/tmp/bricklink_part_{i + 1}.csv')
+        chunk = pd.read_csv(f'gs://bucket-lego/source/bricklink/tmp/bricklink_part_{i}.csv')
         chunk['year_data'] = year_data
         chunk['month_data'] = month_data
 
@@ -194,6 +194,9 @@ def scrapper():
                 qty_used_eur.append('n/a')
 
             driver.quit()
+            with export_bucket.blob(f'output/log.txt').open('w') as f:
+                f.write(f'chunk n: {i}, line number: {index} scrapped, for the set n: {row["set_num"]}')
+            time.sleep(18000)
 
         chunk_scraped = chunk
         chunk_scraped['price_new_usa'] = price_new_usa
@@ -209,16 +212,19 @@ def scrapper():
         chunk_scraped['qty_new_eur'] = qty_new_eur
         chunk_scraped['qty_used_eur'] = qty_used_eur
 
-        export_bucket.blob(f'output/bricklink/tmp/bricklink_scraped_part_{i + 1}_{month_data}.csv').upload_from_string(
+        export_bucket.blob(f'output/bricklink/tmp/bricklink_scraped_part_{i}_{month_data}.csv').upload_from_string(
             chunk_scraped.to_csv(), 'text/csv')
 
+        
+
         with export_bucket.blob(f'output/log.txt').open('w') as f:
-            f.write(f'chunk number {i + 1} finished at: {datetime.datetime.now()}')
-        i += 1
+            f.write(f'chunk number {i} finished at: {datetime.datetime.now()}')
+        
         time.sleep(18000)
 
     with export_bucket.blob(f'output/log.txt').open('w') as f:
         f.write(f'script finished at: {datetime.datetime.now()}')
+
 
 
 def main():
@@ -229,3 +235,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
